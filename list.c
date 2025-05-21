@@ -1,4 +1,4 @@
-// List with many types;
+// List with at;
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -198,6 +198,16 @@ unsigned int list_size(list_t *self)
     return self->size;
 }
 
+void *list_at(list_t *self, int idx)
+{
+    node_t *current = self->head;
+    for (size_t i = 0; i < idx; i++)
+    {
+        current = current->next;
+    }
+    return current->value;
+}
+
 void list_print(list_t *self)
 {
     printf("[");
@@ -237,11 +247,15 @@ int main(const int argc, char **argv)
     puts("======================================");
     struct list_t *list3 = list_alloc_init();
     list_print(list3);
-    list_insert(list3, 0, int_alloc_init(2), TYPE_INT);
+    list_insert(list3, 0, int_alloc_init(1), TYPE_INT);
     list_insert(list3, 1, float_alloc_init(3.141597), TYPE_FLOAT);
     list_insert(list3, 2, long_alloc_init(24294967297), TYPE_LONG);
     list_insert(list3, 3, string_alloc_init("IFPI"), TYPE_STRING);
     list_print(list3);
+
+    int position = 0;
+    int *num = (int *)list_at(list3, position);
+    printf("Value: %d at position: %d\n", *num, position);
 
     return EXIT_SUCCESS;
 }
