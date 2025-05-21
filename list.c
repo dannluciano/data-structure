@@ -1,4 +1,5 @@
-// List with multi appends;
+// List with insert on position 0;
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -78,21 +79,49 @@ void list_append(list_t *self, void *value)
     self->size = self->size + 1;
 }
 
-void list_print(struct list_t *list)
+void list_insert(list_t *self, unsigned int position, void *value)
+{
+    node_t *node = node_alloc_init(value);
+
+    if (position == 0)
+    {
+        node_t *aux = self->head;
+        self->head = node;
+        node->next = aux;
+    }
+
+    self->size = self->size + 1;
+}
+
+unsigned int list_size(list_t *self)
+{
+    return self->size;
+}
+
+void list_print(list_t *self)
 {
     putchar('[');
-    node_print(list->head);
+    node_print(self->head);
     putchar(']');
+    printf(" size: %u", self->size);
     putchar('\n');
 }
 
 int main(const int argc, char **argv)
 {
-    struct list_t *list = list_alloc_init();
-    list_print(list);
-    list_append(list, (void *)10);
-    list_append(list, (void *)20);
-    list_append(list, (void *)30);
-    list_print(list);
+    struct list_t *list1 = list_alloc_init();
+    list_print(list1);
+    list_append(list1, (void *)10);
+    list_append(list1, (void *)20);
+    list_append(list1, (void *)30);
+    list_insert(list1, 0, (void *)4);
+    list_print(list1);
+
+    struct list_t *list2 = list_alloc_init();
+    list_print(list2);
+    list_insert(list2, 0, (void *)2);
+    list_insert(list2, 0, (void *)1);
+    list_print(list2);
+
     return EXIT_SUCCESS;
 }
