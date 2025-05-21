@@ -1,4 +1,4 @@
-// List with zero elements/nodes;
+// List with append ;
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -29,6 +29,8 @@ void node_print(node_t *node)
     {
         return;
     }
+
+    printf("%d, ", (int)node->value);
 }
 
 typedef struct list_t
@@ -53,6 +55,16 @@ list_alloc_init()
     return list;
 }
 
+void list_append(list_t *self, void *value)
+{
+    node_t *node = node_alloc_init(value);
+    if (self->size == 0)
+    {
+        self->head = node;
+        self->size = self->size + 1;
+    }
+}
+
 void list_print(struct list_t *list)
 {
     putchar('[');
@@ -64,6 +76,8 @@ void list_print(struct list_t *list)
 int main(const int argc, char **argv)
 {
     struct list_t *list = list_alloc_init();
+    list_print(list);
+    list_append(list, (void *)10);
     list_print(list);
     return EXIT_SUCCESS;
 }
