@@ -1,4 +1,4 @@
-// List with append ;
+// List with multi appends;
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,6 +31,10 @@ void node_print(node_t *node)
     }
 
     printf("%d, ", (int)node->value);
+    if (node->next != NULL)
+    {
+        node_print(node->next);
+    }
 }
 
 typedef struct list_t
@@ -61,8 +65,17 @@ void list_append(list_t *self, void *value)
     if (self->size == 0)
     {
         self->head = node;
-        self->size = self->size + 1;
     }
+    if (self->size > 0)
+    {
+        node_t *current = self->head;
+        while (current->next != NULL)
+        {
+            current = current->next;
+        }
+        current->next = node;
+    }
+    self->size = self->size + 1;
 }
 
 void list_print(struct list_t *list)
@@ -78,6 +91,8 @@ int main(const int argc, char **argv)
     struct list_t *list = list_alloc_init();
     list_print(list);
     list_append(list, (void *)10);
+    list_append(list, (void *)20);
+    list_append(list, (void *)30);
     list_print(list);
     return EXIT_SUCCESS;
 }
