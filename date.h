@@ -12,5 +12,6 @@ typedef struct date_t
 } date_t;
 
 bool date_is_valid(date_t date);
+bool date_parse(const char *str, date_t *date);
 
 #endif // DATE_H
