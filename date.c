@@ -48,3 +48,23 @@ bool date_parse(const char *str, date_t *date)
 
     return date_is_valid(*date);
 }
+
+char *date_to_str(date_t *date)
+{
+    if (date->month < 1 || date->month > 12)
+    {
+        return NULL; // mês inválido
+    }
+    const char *month_dict[] = {
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"};
+
+    char *date_str = malloc(32);
+    if (!date_str)
+    {
+        return NULL;
+    }
+
+    snprintf(date_str, 32, "%d de %s de %d", date->day, month_dict[date->month - 1], date->year);
+    return date_str;
+}

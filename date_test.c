@@ -6,8 +6,11 @@
 
 void test(bool boolean_expression)
 {
-    assert(boolean_expression);
-    putchar('.');
+    if (boolean_expression) {
+        putchar('.');
+    } else {
+        putchar('F');
+    }   
 }
 
 int main(int argc, char const *argv[])
@@ -45,6 +48,17 @@ int main(int argc, char const *argv[])
     test(date_parse("01/01/1970", &new_date) == true);
     test(date_parse("29/02/2400", &new_date) == true);
     test(date_parse("29/02/2100", &new_date) == false);
+    char *date_str;
+    date_str = date_to_str(&new_date);
+    test(!strncmp(date_str, "29 de fevereiro de 2100", 24));
+
+    new_date = (date_t){.day = 0, .month = 0, .year = 0};
+    date_str = date_to_str(&new_date);
+    test(date_str == NULL);
+
+    new_date = (date_t){.day = 1, .month = 1, .year = 0};
+    date_str = date_to_str(&new_date);
+    test(!strncmp(date_str, "1 de janeiro de 0", 24));
 
     putchar('\n');
     return EXIT_SUCCESS;

@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 typedef struct date_t
@@ -14,5 +15,6 @@ typedef struct date_t
 
 bool date_is_valid(date_t date);
 bool date_parse(const char *str, date_t *date);
+char *date_to_str(date_t *date);
 
 #endif // DATE_H
