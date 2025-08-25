@@ -58,8 +58,8 @@ void list_remove(list_t *self, object_t *obj);
 void list_sort(list_t *self, int (*cmp)(object_t *, object_t *));
 list_t *list_clone(list_t *self);
 bool list_equals(list_t *a, list_t *b);
-void list_foreach(list_t *list, void (*callback)(object_t *obj));
-void list_foreach_ctx(list_t *list, void (*callback)(object_t *obj, void *ctx), void *ctx);
+void list_foreach(list_t *self, void (*callback)(object_t *obj));
+void list_foreach_ctx(list_t *self, void (*callback)(object_t *obj, void *ctx), void *ctx);
 
 #define LIST_APPEND_INT(list, val) list_append((list), int_alloc_init(val), TYPE_INT)
 #define LIST_APPEND_LONG(list, val) list_append((list), long_alloc_init(val), TYPE_LONG)

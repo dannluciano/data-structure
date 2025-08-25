@@ -243,12 +243,12 @@ void list_remove_at(list_t *self, unsigned int idx)
     self->size -= 1;
 }
 
-void list_foreach(list_t *list, void (*callback)(object_t *obj))
+void list_foreach(list_t *self, void (*callback)(object_t *obj))
 {
-    if (!list || !callback)
+    if (!self || !callback)
         return;
 
-    node_t *current = list->head;
+    node_t *current = self->head;
     while (current)
     {
         callback(current->object);
@@ -256,12 +256,12 @@ void list_foreach(list_t *list, void (*callback)(object_t *obj))
     }
 }
 
-void list_foreach_ctx(list_t *list, void (*callback)(object_t *obj, void *ctx), void *ctx)
+void list_foreach_ctx(list_t *self, void (*callback)(object_t *obj, void *ctx), void *ctx)
 {
-    if (!list || !callback)
+    if (!self || !callback)
         return;
 
-    node_t *current = list->head;
+    node_t *current = self->head;
     while (current)
     {
         callback(current->object, ctx);
