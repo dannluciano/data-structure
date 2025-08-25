@@ -1,35 +1,5 @@
 #include "array.h"
 
-static inline int *int_alloc_init(int valor)
-{
-    int *p = malloc(sizeof(int));
-    *p = valor;
-    return p;
-}
-
-static inline long *long_alloc_init(long valor)
-{
-    long *p = malloc(sizeof(long));
-    *p = valor;
-    return p;
-}
-
-static inline float *float_alloc_init(float valor)
-{
-    float *p = malloc(sizeof(float));
-    *p = valor;
-    return p;
-}
-
-static inline char *string_alloc_init(const char *str)
-{
-    if (!str)
-        return NULL;
-    char *p = malloc(strlen(str) + 1);
-    strcpy(p, str);
-    return p;
-}
-
 object_t *obj_alloc_init(void *value, type_t type)
 {
     object_t *self = (object_t *)malloc(sizeof(object_t));
@@ -102,12 +72,18 @@ array_t *array_alloc_init(unsigned int capacity)
 
     if (capacity > 0)
     {
-        array->elements = (struct object_t **)calloc(sizeof(struct object_t), capacity);
+        array->elements = (object_t **)calloc(capacity, sizeof(object_t *));
+        if (!array->elements)
+        {
+            perror("Memory Error");
+            exit(EXIT_FAILURE);
+        }
     }
     else
     {
         array->elements = NULL;
     }
+
     array->capacity = capacity;
     array->size = 0;
 
@@ -116,11 +92,19 @@ array_t *array_alloc_init(unsigned int capacity)
 
 array_t *__array_realloc__(array_t *self)
 {
-    struct object_t **old = self->elements;
-    unsigned int new_capacity = 1 + self->capacity * 1.5;
+    if (!self)
+    {
+        return NULL;
+    }
 
-    self->elements = (struct object_t **)calloc(sizeof(struct object_t), new_capacity);
-    if (self->elements == NULL)
+    object_t **old = self->elements;
+    unsigned int base = (self->capacity == 0) ? 1u : self->capacity;
+    unsigned int new_capacity = base + (base >> 1); // ~1.5x
+    if (new_capacity <= self->capacity)
+        new_capacity = self->capacity + 1;
+
+    object_t **new_elems = (object_t **)calloc(new_capacity, sizeof(object_t *));
+    if (!new_elems)
     {
         perror("Memory Error");
         exit(EXIT_FAILURE);
@@ -128,17 +112,29 @@ array_t *__array_realloc__(array_t *self)
 
     for (size_t i = 0; i < self->size; i++)
     {
-        self->elements[i] = old[i];
+        new_elems[i] = old ? old[i] : NULL;
     }
-    self->capacity = new_capacity;
 
+    self->elements = new_elems;
+    self->capacity = new_capacity;
+    if (old)
+    {
+        free(old);
+    }
     return self;
 }
 
 void array_free(array_t *self)
 {
+    if (!self)
+        return;
     if (self->elements)
     {
+        for (size_t i = 0; i < self->size; i++)
+        {
+            if (self->elements[i])
+                obj_free(self->elements[i]);
+        }
         free(self->elements);
     }
     free(self);
@@ -200,7 +196,7 @@ unsigned int array_capacity(array_t *self)
 
 object_t *array_at(array_t *self, unsigned int idx)
 {
-    if (!self || idx < 0 || idx >= self->size)
+    if (!self || idx >= self->size)
         return NULL;
     return self->elements[idx];
 }
@@ -225,11 +221,13 @@ void array_remove_at(array_t *self, unsigned int idx)
     if (!self || self->size == 0 || idx >= self->size)
         return;
 
-    for (size_t i = idx; i < self->size; i++)
-    {
+    if (self->elements[idx])
+        obj_free(self->elements[idx]);
+    for (size_t i = idx; i + 1 < self->size; i++)
         self->elements[i] = self->elements[i + 1];
-    }
-    self->size = self->size - 1;
+
+    self->elements[self->size - 1] = NULL;
+    self->size--;
 }
 
 void array_foreach(array_t *self, void (*callback)(object_t *obj))

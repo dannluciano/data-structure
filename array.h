@@ -6,7 +6,36 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline int *int_alloc_init(int valor);
+// === Inline value allocators (Option A) ===
+static inline int *int_alloc_init(int valor) {
+    int *p = (int *)malloc(sizeof(int));
+    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
+    *p = valor;
+    return p;
+}
+
+static inline long *long_alloc_init(long valor) {
+    long *p = (long *)malloc(sizeof(long));
+    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
+    *p = valor;
+    return p;
+}
+
+static inline float *float_alloc_init(float valor) {
+    float *p = (float *)malloc(sizeof(float));
+    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
+    *p = valor;
+    return p;
+}
+
+static inline char *string_alloc_init(const char *valor) {
+    if (!valor) return NULL;
+    size_t n = strlen(valor) + 1;
+    char *p = (char *)malloc(n);
+    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
+    memcpy(p, valor, n);
+    return p;
+}
 static inline long *long_alloc_init(long valor);
 static inline float *float_alloc_init(float valor);
 static inline char *string_alloc_init(const char *str);
