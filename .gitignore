@@ -52,3 +52,7 @@ Mkfile.old
 dkms.conf
 date
 date_test
+list
+array
+main
+arena_allocator
