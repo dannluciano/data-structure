@@ -61,6 +61,7 @@ void obj_free(object_t *self)
     }
     free(self);
 }
+
 void obj_print(object_t *self)
 {
     if (self != NULL)
@@ -113,6 +114,27 @@ array_t *array_alloc_init(unsigned int capacity)
     return array;
 }
 
+array_t *__array_realloc__(array_t *self)
+{
+    struct object_t **old = self->elements;
+    unsigned int new_capacity = 1 + self->capacity * 1.5;
+
+    self->elements = (struct object_t **)calloc(sizeof(struct object_t), new_capacity);
+    if (self->elements == NULL)
+    {
+        perror("Memory Error");
+        exit(EXIT_FAILURE);
+    }
+
+    for (size_t i = 0; i < self->size; i++)
+    {
+        self->elements[i] = old[i];
+    }
+    self->capacity = new_capacity;
+
+    return self;
+}
+
 void array_free(array_t *self)
 {
     if (self->elements)
@@ -127,45 +149,43 @@ void array_append(array_t *self, void *value, type_t type)
     object_t *obj = obj_alloc_init(value, type);
     if (self->capacity == 0)
     {
-        printf("Reallocation not implemented\n");
+        __array_realloc__(self);
     }
-    if (self->size < self->capacity)
+
+    if (self->size >= self->capacity)
     {
-        self->elements[self->size] = obj;
-        self->size = self->size + 1;
+        __array_realloc__(self);
     }
-    else
-    {
-        printf("Reallocation not implemented\n");
-    }
+
+    self->elements[self->size] = obj;
+    self->size = self->size + 1;
 }
 
 void array_insert(array_t *self, unsigned int position, void *value, type_t type)
 {
     if (!self)
         return;
-    if (self->size < self->capacity)
+
+    if (self->size >= self->capacity)
     {
-        if (position > self->size)
-        {
-            array_append(self, value, type);
-            return;
-        }
-
-        object_t *obj = obj_alloc_init(value, type);
-
-        for (size_t i = self->size; i > position; i--)
-        {
-            self->elements[i] = self->elements[i - 1];
-        }
-
-        self->elements[position] = obj;
-        self->size = self->size + 1;
+        __array_realloc__(self);
     }
-    else
+
+    if (position > self->size)
     {
-        printf("Reallocation not implemented\n");
+        array_append(self, value, type);
+        return;
     }
+
+    object_t *obj = obj_alloc_init(value, type);
+
+    for (size_t i = self->size; i > position; i--)
+    {
+        self->elements[i] = self->elements[i - 1];
+    }
+
+    self->elements[position] = obj;
+    self->size = self->size + 1;
 }
 
 unsigned int array_size(array_t *self)
@@ -243,15 +263,21 @@ int main(const int argc, char **argv)
 {
     puts("===================================================================");
     struct array_t *array0 = array_alloc_init(0);
+    array_print(array0);
     array_append(array0, int_alloc_init(10), TYPE_INT);
+    array_print(array0);
     array_free(array0);
     puts("===================================================================");
     struct array_t *array1 = array_alloc_init(3);
     array_print(array1);
     array_append(array1, int_alloc_init(10), TYPE_INT);
+    array_print(array1);
     array_append(array1, int_alloc_init(20), TYPE_INT);
+    array_print(array1);
     array_append(array1, int_alloc_init(30), TYPE_INT);
+    array_print(array1);
     array_insert(array1, 0, int_alloc_init(4), TYPE_INT);
+    array_print(array1);
     array_insert(array1, 5, int_alloc_init(5), TYPE_INT);
     array_print(array1);
     puts("===================================================================");
@@ -305,10 +331,21 @@ int main(const int argc, char **argv)
     array_remove_at(array1, 0);
     array_print(array1);
 
+    puts("===================================================================");
+    struct array_t *array5 = array_alloc_init(0);
+    for (size_t i = 0; i < 100; i++)
+    {
+        array_append(array5, int_alloc_init(i), TYPE_INT);
+
+        // array_print(array5);
+        // printf("%d\n", array_capacity(array5));
+    }
+
     array_free(array1);
     array_free(array2);
     array_free(array3);
     array_free(array4);
+    array_free(array5);
 
     return EXIT_SUCCESS;
 }
