@@ -36,14 +36,13 @@ void obj_print(object_t *self)
 {
     if (self != NULL)
     {
-
         switch (self->type)
         {
         case TYPE_INT:
             printf("%d", *(int *)self->value);
             break;
         case TYPE_LONG:
-            printf("%ld", *(long *)self->value);
+            printf("%lld", *(long long *)self->value);
             break;
         case TYPE_FLOAT:
             printf("%.2f", *(float *)self->value);
@@ -142,11 +141,12 @@ void array_free(array_t *self)
 
 void array_append(array_t *self, void *value, type_t type)
 {
-    object_t *obj = obj_alloc_init(value, type);
-    if (self->capacity == 0)
+    if (!self)
     {
-        __array_realloc__(self);
+        return;
     }
+
+    object_t *obj = obj_alloc_init(value, type);
 
     if (self->size >= self->capacity)
     {
@@ -302,7 +302,7 @@ int main(const int argc, char **argv)
     obj_print(num);
     putchar('\n');
 
-    object_t *obj = obj_alloc_init("T", TYPE_STRING);
+    object_t *obj = obj_alloc_init(string_alloc_init("T"), TYPE_STRING);
     obj_print(obj);
     putchar('\n');
 
@@ -336,8 +336,9 @@ int main(const int argc, char **argv)
         array_append(array5, int_alloc_init(i), TYPE_INT);
 
         // array_print(array5);
-        // printf("%d\n", array_capacity(array5));
     }
+    printf("%d\n", array_capacity(array5));
+    assert(array_capacity(array5) == 141);
 
     array_free(array1);
     array_free(array2);

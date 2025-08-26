@@ -1,44 +1,62 @@
 #if !defined(ARRAY_T)
 #define ARRAY_T
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// === Inline value allocators (Option A) ===
-static inline int *int_alloc_init(int valor) {
+static inline int *int_alloc_init(int value)
+{
     int *p = (int *)malloc(sizeof(int));
-    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
-    *p = valor;
+    if (!p)
+    {
+        perror("Memory Error");
+        exit(EXIT_FAILURE);
+    }
+    *p = value;
     return p;
 }
 
-static inline long *long_alloc_init(long valor) {
+static inline long *long_alloc_init(long value)
+{
     long *p = (long *)malloc(sizeof(long));
-    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
-    *p = valor;
+    if (!p)
+    {
+        perror("Memory Error");
+        exit(EXIT_FAILURE);
+    }
+    *p = value;
     return p;
 }
 
-static inline float *float_alloc_init(float valor) {
+static inline float *float_alloc_init(float value)
+{
     float *p = (float *)malloc(sizeof(float));
-    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
-    *p = valor;
+    if (!p)
+    {
+        perror("Memory Error");
+        exit(EXIT_FAILURE);
+    }
+    *p = value;
     return p;
 }
 
-static inline char *string_alloc_init(const char *valor) {
-    if (!valor) return NULL;
-    size_t n = strlen(valor) + 1;
+static inline char *string_alloc_init(const char *value)
+{
+    if (!value)
+        return NULL;
+    size_t n = strlen(value) + 1;
     char *p = (char *)malloc(n);
-    if (!p) { perror("Memory Error"); exit(EXIT_FAILURE); }
-    memcpy(p, valor, n);
+    if (!p)
+    {
+        perror("Memory Error");
+        exit(EXIT_FAILURE);
+    }
+    memcpy(p, value, n);
     return p;
 }
-static inline long *long_alloc_init(long valor);
-static inline float *float_alloc_init(float valor);
-static inline char *string_alloc_init(const char *str);
 
 typedef enum
 {
